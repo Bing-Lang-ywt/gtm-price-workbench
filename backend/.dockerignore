@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+tests/
+scripts/
+seed.py
+README.md
+
+# 数据库不进镜像——通过挂载卷提供，避免把快照烤进镜像层
+*.db
+*.db-shm
+*.db-wal
+
+*.log
+.DS_Store

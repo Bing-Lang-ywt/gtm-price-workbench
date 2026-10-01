@@ -1,0 +1,17 @@
+fastapi==0.140.13
+uvicorn[standard]>=0.30
+sqlmodel==0.0.39
+httpx>=0.27
+beautifulsoup4>=4.12
+apscheduler>=3.10
+pyjwt>=2.8
+email-validator>=2.0
+python-multipart>=0.0.9
+pytest>=8.0
+
+# SPA headless crawling (P1, optional). Only needed when ENABLE_SPA_CRAWL=1.
+# After install, also fetch the browser binary: `playwright install chromium`.
+playwright>=1.44
+
+# 参数表（桌面 Excel）读取：参数对比 / 芯片天梯图功能
+openpyxl>=3.1

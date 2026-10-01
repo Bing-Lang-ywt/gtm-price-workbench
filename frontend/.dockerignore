@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.playwright-cli/
+.venv/
+
+.env.local
+.env*.local
+
+npm-debug.log*
+*.log
+.DS_Store

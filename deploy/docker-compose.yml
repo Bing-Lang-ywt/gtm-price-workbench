@@ -1,0 +1,56 @@
+name: price-monitor
+
+services:
+  backend:
+    build:
+      context: ../backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: sqlite:////data/price_monitor.db
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY 必须设置，不可留空}
+      DEV_EMAIL: ${DEV_EMAIL:?DEV_EMAIL 必须设置}
+      DEV_PASSWORD: ${DEV_PASSWORD:?DEV_PASSWORD 必须设置}
+      # VPS 全栈含定时爬虫：启用 APScheduler 每日抓取 + Playwright 浏览器
+      ENABLE_SCHEDULER: "0"
+      ENABLE_SPA_CRAWL: "0"
+      # 同域反代下浏览器不发跨域请求，此项仅作兜底
+      CORS_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost}
+    volumes:
+      # 宿主 ./data 存放 price_monitor.db，容器重建不丢数据
+      # 首次部署需执行：sudo chown -R 10001:10001 ./data
+      - ./data:/data
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        # same-origin：前端请求走浏览器当前地址，由 Caddy 转发给后端
+        NEXT_PUBLIC_API_URL: same-origin
+    restart: unless-stopped
+    depends_on:
+      - backend
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    environment:
+      # 域名（如 price.example.com）自动签发 HTTPS；仅有 IP 时填 :80
+      SITE_ADDRESS: ${SITE_ADDRESS:?SITE_ADDRESS 必须设置}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

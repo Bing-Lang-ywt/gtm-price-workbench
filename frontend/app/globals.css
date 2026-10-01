@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * 设计 Token（Phase 1 基线，见 price-monitor-design.md §2）。
+ * 每个颜色提供两种变量：
+ *  - `--x`（hex）：供内联样式 / SVG / Recharts 直接使用（如 stroke="var(--accent)"）。
+ *  - `--x-rgb`（"R G B" 通道）：供 Tailwind 颜色透明度修饰符（bg-success/10）使用。
+ * 组件类名一律走 Tailwind token，禁止硬编码颜色（仅 #fff/#000 例外）。
+ * 主色：Petrol Teal #0E7C86（纯色，无紫粉渐变）。
+ */
+
+:root {
+  /* 中性底（浅色优先） */
+  --bg: #f6f8f9; --bg-rgb: 246 248 249;
+  --surface: #ffffff; --surface-rgb: 255 255 255;
+  --surface-warm: #f1f4f6; --surface-warm-rgb: 241 244 246;
+  --fg: #0f172a; --fg-rgb: 15 23 42;
+  --fg-2: #334155; --fg-2-rgb: 51 65 85;
+  --muted: #64748b; --muted-rgb: 100 116 139;
+  --meta: #94a3b8; --meta-rgb: 148 163 184;
+  --border: #e2e8f0; --border-rgb: 226 232 240;
+  --border-soft: #eef2f5; --border-soft-rgb: 238 242 245;
+
+  /* 主强调色 Petrol Teal */
+  --accent: #0e7c86; --accent-rgb: 14 124 134;
+  --accent-text: #0b6470; --accent-text-rgb: 11 100 112;
+  --accent-on: #ffffff; --accent-on-rgb: 255 255 255;
+  --accent-hover: #0a6570; --accent-hover-rgb: 10 101 112;
+  --accent-active: #075258; --accent-active-rgb: 7 82 88;
+  --accent-soft: #e6f4f5; --accent-soft-rgb: 230 244 245;
+
+  /* 语义色 */
+  --success: #15803d; --success-rgb: 21 128 61;
+  --danger: #b91c1c; --danger-rgb: 185 28 28;
+  --warn: #b45309; --warn-rgb: 180 83 9;
+  --warn-strong: #92400e; --warn-strong-rgb: 146 64 14;
+  --info: #1d4ed8; --info-rgb: 29 78 216;
+
+  --trend-down: #15803d; --trend-down-rgb: 21 128 61;
+  --trend-up: #b91c1c; --trend-up-rgb: 185 28 28;
+
+  --severity-critical: #b91c1c; --severity-critical-rgb: 185 28 28;
+  --severity-warning: #b45309; --severity-warning-rgb: 180 83 9;
+  --severity-info: #1d4ed8; --severity-info-rgb: 29 78 216;
+
+  /* 字体（运行时由 <link> 加载 Inter / Noto Sans SC / JetBrains Mono，离线回退系统字体） */
+  --font-body: "Inter", "Noto Sans SC", system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+
+  /* 间距（4px 网格） */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px;
+
+  /* 圆角 */
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+
+  /* 动效（禁止弹跳） */
+  --motion-fast: 120ms; --motion-base: 160ms; --motion-slow: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* 深色主题（分析师长时段，可选，由 .dark 切换） */
+.dark {
+  --bg: #0b0f14; --bg-rgb: 11 15 20;
+  --surface: #131a21; --surface-rgb: 19 26 33;
+  --surface-warm: #1b242d; --surface-warm-rgb: 27 36 45;
+  --fg: #e6edf3; --fg-rgb: 230 237 243;
+  --fg-2: #b6c2ce; --fg-2-rgb: 182 194 206;
+  --muted: #8a98a6; --muted-rgb: 138 152 166;
+  --meta: #5c6b78; --meta-rgb: 92 107 120;
+  --border: #243039; --border-rgb: 36 48 57;
+  --border-soft: #1a222a; --border-soft-rgb: 26 34 42;
+
+  --accent: #22a6b4; --accent-rgb: 34 166 180;
+  --accent-text: #4fd0db; --accent-text-rgb: 79 208 219;
+  --accent-on: #06292c; --accent-on-rgb: 6 41 44;
+  --accent-hover: #2bbccb; --accent-hover-rgb: 43 188 203;
+  --accent-active: #1c8b97; --accent-active-rgb: 28 139 151;
+  --accent-soft: #103239; --accent-soft-rgb: 16 50 57;
+
+  --success: #34d399; --success-rgb: 52 211 153;
+  --danger: #f87171; --danger-rgb: 248 113 113;
+  --warn: #fbbf24; --warn-rgb: 251 191 36;
+  --warn-strong: #d9a514; --warn-strong-rgb: 217 165 20;
+  --info: #60a5fa; --info-rgb: 96 165 250;
+
+  --trend-down: #34d399; --trend-down-rgb: 52 211 153;
+  --trend-up: #f87171; --trend-up-rgb: 248 113 113;
+
+  --severity-critical: #f87171; --severity-critical-rgb: 248 113 113;
+  --severity-warning: #fbbf24; --severity-warning-rgb: 251 191 36;
+  --severity-info: #60a5fa; --severity-info-rgb: 96 165 250;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ALL CAPS 列头 / 标签字距 */
+.tracking-caps {
+  letter-spacing: 0.06em;
+}
+
+/* 等宽数字（金额 / 汇率 / SKU / 坐标） */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 焦点环（键盘可达，focus-visible） */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* 滚动条收敛（数据密集） */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--meta);
+}
+
+/* 全量 prefers-reduced-motion 降级 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* TanStack Table 等组件需要的工具类 */
+.th-caps {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Toast 入场（功能动效，禁止弹跳；随 prefers-reduced-motion 降级） */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-enter {
+  animation: toastIn 160ms var(--ease-standard);
+}
+
+/* ============ 科技风视觉（深色模式为主） ============ */
+
+/* 深色模式：细网格底纹 + 极淡辉光，营造数据控制台质感 */
+.dark body {
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(34, 166, 180, 0.10) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+}
+
+/* 强调色辉光（卡片 / 主按钮聚焦时可用） */
+.dark .accent-glow {
+  box-shadow:
+    0 0 0 1px rgba(34, 166, 180, 0.35),
+    0 0 22px -6px rgba(34, 166, 180, 0.55);
+}
+
+/* 侧栏导航链接（科技风：活动项左侧强调条 + 深色辉光） */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-2);
+  transition:
+    background-color 120ms var(--ease-standard),
+    color 120ms var(--ease-standard);
+}
+.nav-link:hover {
+  background: var(--surface-warm);
+}
+
+.nav-link-active {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.dark .nav-link-active {
+  box-shadow:
+    inset 2px 0 0 var(--accent),
+    0 0 18px -8px rgba(34, 166, 180, 0.65);
+}
