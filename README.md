@@ -69,6 +69,11 @@ python scripts/scan_public.py
 `POST /api/v1/prices/preflight` 在鉴权后检查金额、价格类型和币种，返回明确问题，
 不写库或触发通知。详情见 [使用说明](docs/PRICE_PREFLIGHT.md)。
 
+## 最新价格差汇总
+
+`GET /api/v1/comparison/spread` 计算同机型的最新跨渠道正价差；缺价不会转成零，
+只有一个渠道时不计算价差。详情见 [使用说明](docs/PRICE_SPREAD.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)
