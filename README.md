@@ -79,6 +79,12 @@ python scripts/scan_public.py
 `POST /api/v1/alert-rules/preview` 对提交的规则与 EUR 样例解释匹配结果，
 去重重复样例，不读取数据库或投递通知。详情见 [使用说明](docs/ALERT_PREVIEW.md)。
 
+## 虚构参数表生成
+
+在 backend 目录运行 `python -m app.demo_parameters demo_parameters.xlsx`，
+生成可供现有参数解析器读取的虚构机型与芯片工作簿，拒绝覆盖。
+详情见 [使用说明](docs/DEMO_PARAMETERS.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)
