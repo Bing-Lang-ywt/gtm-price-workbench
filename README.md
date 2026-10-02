@@ -85,6 +85,11 @@ python scripts/scan_public.py
 生成可供现有参数解析器读取的虚构机型与芯片工作簿，拒绝覆盖。
 详情见 [使用说明](docs/DEMO_PARAMETERS.md)。
 
+## 固定提交证据导出
+
+本地 CLI `python -m app.commit_evidence` 导出提交标识、源码哈希、差异范围与验证引用。
+详情见 [使用说明](docs/COMMIT_EVIDENCE.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)
