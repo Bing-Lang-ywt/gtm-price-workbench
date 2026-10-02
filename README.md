@@ -64,6 +64,11 @@ python scripts/scan_public.py
 登录后可调用 `GET /api/v1/models/integrity` 检查孤立 SKU、缺失关联及无效竞品映射。
 接口只读，详情见 [使用说明](docs/CATALOG_INTEGRITY.md)。
 
+## 价格输入预检
+
+`POST /api/v1/prices/preflight` 在鉴权后检查金额、价格类型和币种，返回明确问题，
+不写库或触发通知。详情见 [使用说明](docs/PRICE_PREFLIGHT.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)

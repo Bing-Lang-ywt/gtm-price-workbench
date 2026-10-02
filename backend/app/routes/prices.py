@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel
+from typing import Any
 from sqlmodel import Session
 
 from app.controllers import prices as ctrl
@@ -17,6 +18,22 @@ class ManualPriceCreate(BaseModel):
     price: float
     currency: str  # EUR | RSD | HUF | RON | BGN | PLN | CZK
     in_stock: bool = True
+
+
+class PricePreflightBody(BaseModel):
+    price: Any
+    price_type: str
+    currency: str
+
+
+@router.post("/preflight")
+def price_preflight(
+    body: PricePreflightBody,
+    _: dict = Depends(get_current_user),
+):
+    from app.services.price_preflight import preflight_price
+
+    return ok(preflight_price(body.price, body.price_type, body.currency))
 
 
 @router.post("/manual")
