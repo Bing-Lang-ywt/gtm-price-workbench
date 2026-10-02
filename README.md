@@ -59,6 +59,11 @@ python scripts/scan_public.py
 
 测试使用临时数据库、离线样例与模拟浏览器，禁用调度与外部通知。结构扫描只是选定模式检查，不能证明没有任何秘密或软件缺陷。CI 的实际结果以 GitHub Actions 为准。
 
+## 目录完整性诊断
+
+登录后可调用 `GET /api/v1/models/integrity` 检查孤立 SKU、缺失关联及无效竞品映射。
+接口只读，详情见 [使用说明](docs/CATALOG_INTEGRITY.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)

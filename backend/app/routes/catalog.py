@@ -29,6 +29,16 @@ def list_models(
     return ok(ctrl.list_models_controller(session, is_target))
 
 
+@router.get("/integrity")
+def catalog_integrity(
+    session: Session = Depends(get_session),
+    _: dict = Depends(get_current_user),
+):
+    from app.services.catalog_integrity import diagnose_catalog
+
+    return ok(diagnose_catalog(session))
+
+
 @router.get("/{model_id}")
 def get_model(
     model_id: str,
