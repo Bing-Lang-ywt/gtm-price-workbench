@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import Session
 from typing import Optional
 
@@ -61,6 +61,24 @@ def create_rule(
     except InvalidRuleError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     return ok(data, "Alert rule created")
+
+
+class AlertPreviewBody(BaseModel):
+    rules: list[dict] = Field(min_length=1, max_length=50)
+    samples: list[dict] = Field(min_length=1, max_length=100)
+
+
+@router.post("/preview")
+def preview_alert_rules(
+    body: AlertPreviewBody,
+    _: dict = Depends(get_current_user),
+):
+    from app.services.alert_preview import preview_rules
+
+    try:
+        return ok(preview_rules(body.rules, body.samples))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.get("/{rule_id}")

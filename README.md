@@ -74,6 +74,11 @@ python scripts/scan_public.py
 `GET /api/v1/comparison/spread` 计算同机型的最新跨渠道正价差；缺价不会转成零，
 只有一个渠道时不计算价差。详情见 [使用说明](docs/PRICE_SPREAD.md)。
 
+## 规则离线预览
+
+`POST /api/v1/alert-rules/preview` 对提交的规则与 EUR 样例解释匹配结果，
+去重重复样例，不读取数据库或投递通知。详情见 [使用说明](docs/ALERT_PREVIEW.md)。
+
 ## 审查材料
 
 - [功能与任务边界](docs/MODULES.md)
